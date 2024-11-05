@@ -7,6 +7,7 @@ use app\models\StudentSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * StudentController implements the CRUD actions for Student model.
@@ -37,13 +38,21 @@ class StudentController extends Controller
      * @return string
      */
     public function actionIndex()
-    {
+    { // Toby
         $searchModel = new StudentSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        $sql="select max(minuten) as hoogst, avg(minuten) as gemiddeld, sum(minuten) as totaal from student"; // Maakt een SQL query aan
+        $results = Yii::$app->db->createCommand($sql)->queryOne(); // Doet de resultaten van de SQL query in een variable
+        $hoogste=$results['hoogst']; // Maakt de variable hoogste aan met de resultaat van max(minuten) in
+        $gemiddelde=$results['gemiddeld']; // Maakt de variable gemiddelde aan met de resultaat van avg(minuten) in
+        $totaal=$results['totaal']; // Maakt de variable totaal aan met de resultaat van sum(minuten) in
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'hoogste' => $hoogste,
+            'gemiddelde' => $gemiddelde,
+            'totaal' => $totaal,
         ]);
     }
 
